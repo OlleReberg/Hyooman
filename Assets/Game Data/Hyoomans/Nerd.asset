@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c27fed55df849fc4aa37f69fba92d506, type: 3}
+  m_Name: Nerd
+  m_EditorClassIdentifier: 
+  catchableName: Nerd
+  description: Has a girlfriend in a different country he swears is real
+  frontSprite: {fileID: -1935959972, guid: 7131e79d74f13064b9fac7952406e62f, type: 3}
+  backSprite: {fileID: -1653457891, guid: 7131e79d74f13064b9fac7952406e62f, type: 3}
+  catchableType1: 2
+  catchableType2: 7
+  maxHp: 42
+  attack: 42
+  defense: 42
+  spAttack: 42
+  spDefense: 42
+  speed: 42
+  learnableCombatActions:
+  - combatActionBase: {fileID: 11400000, guid: d6b381fa4b5e5ac4081cad86ce7fe91e, type: 2}
+    level: 1
+  - combatActionBase: {fileID: 11400000, guid: fb27fb444e90fd545a60a38233fa0e97, type: 2}
+    level: 0
+  - combatActionBase: {fileID: 11400000, guid: 4a005b925bae4904b9719092a9e0f7c1, type: 2}
+    level: 12
+  - combatActionBase: {fileID: 11400000, guid: 42bc8c63abebc164dbabb2dcb9cea0c6, type: 2}
+    level: 20

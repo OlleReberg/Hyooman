@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c27fed55df849fc4aa37f69fba92d506, type: 3}
+  m_Name: Karen
+  m_EditorClassIdentifier: 
+  catchableName: Karen
+  description: She wants to speak to the manager
+  frontSprite: {fileID: -1813710486, guid: 6b2d5b502f027674db3edfe0576fbab2, type: 3}
+  backSprite: {fileID: 1508947642, guid: 6b2d5b502f027674db3edfe0576fbab2, type: 3}
+  catchableType1: 7
+  catchableType2: 13
+  maxHp: 0
+  attack: 1
+  defense: 5
+  spAttack: 90
+  spDefense: 99
+  speed: 50
+  learnableCombatActions:
+  - combatActionBase: {fileID: 11400000, guid: 4a005b925bae4904b9719092a9e0f7c1, type: 2}
+    level: 1
+  - combatActionBase: {fileID: 11400000, guid: 867a1d10002514147b7b909f3892343b, type: 2}
+    level: 6
+  - combatActionBase: {fileID: 11400000, guid: d6b381fa4b5e5ac4081cad86ce7fe91e, type: 2}
+    level: 12
+  - combatActionBase: {fileID: 11400000, guid: 2e82f576f9505b54fbd23263a785695d, type: 2}
+    level: 20
