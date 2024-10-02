@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b7bd1654557d2044a789af853117747, type: 3}
+  m_Name: testcon3
+  m_EditorClassIdentifier: 
+  tilePrefab: {fileID: 1049948189061227169, guid: 0982b3bb139c75d41b1b045547732806, type: 3}
+  allowedTop: 000000000100000002000000030000000400000005000000
+  allowedBottom: 000000000200000003000000040000000500000006000000
+  allowedLeft: 040000000500000006000000070000000800000009000000
+  allowedRight: 060000000700000008000000090000000a00000002000000
