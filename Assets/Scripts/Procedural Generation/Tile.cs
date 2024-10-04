@@ -45,7 +45,7 @@ public class Tile
         Entropy = 0; // Mark this tile as collapsed
     }
 
-    public bool Constrain(List<TileConstraint> neighbourPossibilities, Direction direction)
+    public bool Constrain(List<TileConstraint> neighbourPossibilities, TileDirectionType direction)
     {
         bool reduced = false;
 

@@ -2,22 +2,23 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Linq;
 
 public class WFCGenerator : MonoBehaviour
 {
-    public static WFCGenerator Instance { get; private set; } // Singleton instance
+    public static WFCGenerator Instance { get; private set; }
 
     public int gridWidth = 10;
     public int gridHeight = 10;
     public TileConstraint[] tileConstraints;
 
-    public Dictionary<TileType, List<int>> tileTypeToIndex; // Public for access in TileCollapseHandler
+    public Tilemap backgroundTilemap; // Reference to the Background Tilemap
+    public Dictionary<TileType, List<int>> tileTypeToIndex;
     private NativeArray<int> grid;
-    private TileCollapseHandler tileCollapseHandler; // Reference to TileCollapseHandler
+    private TileCollapseHandler tileCollapseHandler;
 
     void Awake()
     {
-        // Implement the singleton pattern
         if (Instance == null)
         {
             Instance = this;
@@ -27,7 +28,6 @@ public class WFCGenerator : MonoBehaviour
             Destroy(gameObject);
         }
 
-        // Initialize TileCollapseHandler in Awake to avoid null references
         tileCollapseHandler = new TileCollapseHandler(this);
     }
 
@@ -40,7 +40,6 @@ public class WFCGenerator : MonoBehaviour
 
     public void RunWaveFunctionCollapse()
     {
-        // Check if tileCollapseHandler is properly initialized
         if (tileCollapseHandler == null)
         {
             Debug.LogError("TileCollapseHandler is not initialized.");
@@ -52,7 +51,7 @@ public class WFCGenerator : MonoBehaviour
             for (int x = 0; x < gridWidth; x++)
             {
                 int tileIndex = tileCollapseHandler.CollapseTileAt(x, y);
-                grid[x + y * gridWidth] = tileIndex;
+                SetTileAt(x, y, tileIndex); // Use SetTileAt method
             }
         }
         ApplyGrid();
@@ -60,7 +59,7 @@ public class WFCGenerator : MonoBehaviour
 
     void InitializeTileTypeLookup()
     {
-        tileTypeToIndex = new Dictionary<TileType, List<int>>(); // Use List<int> as the value type
+        tileTypeToIndex = new Dictionary<TileType, List<int>>();
 
         for (int i = 0; i < tileConstraints.Length; i++)
         {
@@ -68,10 +67,9 @@ public class WFCGenerator : MonoBehaviour
 
             if (!tileTypeToIndex.ContainsKey(currentType))
             {
-                tileTypeToIndex[currentType] = new List<int>(); // Initialize a new list for this TileType
+                tileTypeToIndex[currentType] = new List<int>();
             }
 
-            // Add the index of the current TileConstraint to the list for this TileType
             tileTypeToIndex[currentType].Add(i);
         }
     }
@@ -93,20 +91,17 @@ public class WFCGenerator : MonoBehaviour
 
     public TileType GetNeighborTileType(int x, int y)
     {
-        // Ensure x and y are within bounds of the grid
-        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight) 
-            return TileType.None; // Return a default TileType if out of bounds
+        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight)
+            return TileType.None;
 
         int index = x + y * gridWidth;
 
-        // Check if the index is valid within the grid array
         if (index < 0 || index >= grid.Length)
             return TileType.None;
 
         int neighborIndex = grid[index];
 
-        // Return TileType.None if the tile is not yet collapsed or the index is invalid
-        if (neighborIndex < 0 || neighborIndex >= tileConstraints.Length) 
+        if (neighborIndex < 0 || neighborIndex >= tileConstraints.Length)
             return TileType.None;
 
         return tileConstraints[neighborIndex].tileType;
@@ -114,7 +109,7 @@ public class WFCGenerator : MonoBehaviour
 
     public TileDirection GetNeighborTileDirection(int x, int y)
     {
-        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight) 
+        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight)
             return TileDirection.Middle;
 
         int index = x + y * gridWidth;
@@ -124,7 +119,7 @@ public class WFCGenerator : MonoBehaviour
 
         int neighborIndex = grid[index];
 
-        if (neighborIndex < 0 || neighborIndex >= tileConstraints.Length) 
+        if (neighborIndex < 0 || neighborIndex >= tileConstraints.Length)
             return TileDirection.Middle;
 
         return tileConstraints[neighborIndex].tileDirection;
@@ -132,7 +127,7 @@ public class WFCGenerator : MonoBehaviour
 
     public TransitionType GetNeighborTransitionType(int x, int y)
     {
-        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight) 
+        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight)
             return TransitionType.None;
 
         int index = x + y * gridWidth;
@@ -142,7 +137,7 @@ public class WFCGenerator : MonoBehaviour
 
         int neighborIndex = grid[index];
 
-        if (neighborIndex < 0 || neighborIndex >= tileConstraints.Length) 
+        if (neighborIndex < 0 || neighborIndex >= tileConstraints.Length)
             return TransitionType.None;
 
         return tileConstraints[neighborIndex].transitionType;
@@ -150,19 +145,41 @@ public class WFCGenerator : MonoBehaviour
 
     public TileConstraint GetTileConstraintByType(TileType tileType)
     {
-        // Get the list of indices for the specified TileType
         if (tileTypeToIndex.TryGetValue(tileType, out List<int> indices))
         {
-            // Return the first matching TileConstraint (adjust logic if needed for specific constraints)
             return tileConstraints[indices[0]];
         }
-        
+
         return null;
     }
 
-    void ApplyGrid()
+    public void ApplyGrid()
     {
-        FindObjectOfType<DrawWorld>().UpdateWorld();
+        if (backgroundTilemap == null)
+        {
+            Debug.LogError("Background Tilemap reference is missing!");
+            return;
+        }
+
+        // Draw base terrain on the Background Tilemap
+        for (int y = 0; y < gridHeight; y++)
+        {
+            for (int x = 0; x < gridWidth; x++)
+            {
+                int tileIndex = grid[x + y * gridWidth];
+                TileBase tile = tileConstraints[tileIndex].tile;
+                backgroundTilemap.SetTile(new Vector3Int(x, y, 0), tile);
+            }
+        }
+    }
+
+    public void SetTileAt(int x, int y, int tileIndex)
+    {
+        int index = x + y * gridWidth;
+        if (index >= 0 && index < grid.Length)
+        {
+            grid[index] = tileIndex;
+        }
     }
 
     public int GetTileIndex(int x, int y)
@@ -178,7 +195,29 @@ public class WFCGenerator : MonoBehaviour
             grid.Dispose();
         }
     }
-}
+    
+    public void ClearWorld()
+    {
+        // Clear the terrain tiles on the background tilemap
+        backgroundTilemap.ClearAllTiles();
+        // Reset any other necessary data (e.g., grid, constraints)
+    }
+    public TileType GetTileTypeAt(int x, int y)
+    {
+        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight)
+            return TileType.None;
 
+        int index = x + y * gridWidth;
+        int tileIndex = grid[index];
+
+        // Check if tileIndex is valid
+        if (tileIndex < 0 || tileIndex >= tileConstraints.Length)
+            return TileType.None;
+
+        return tileConstraints[tileIndex].tileType;
+    }
+
+
+}
 
 

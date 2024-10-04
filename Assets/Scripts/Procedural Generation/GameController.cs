@@ -3,73 +3,52 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    public WFCGenerator wfcGenerator; // Reference to the WFCGenerator in the scene
-    private DrawWorld drawWorld;
+    [SerializeField] private WFCGenerator wfcGenerator; // Reference to the WFCGenerator (set in the inspector)
+    [SerializeField] private TilePostProcessor tilePostProcessor; // Reference to the TilePostProcessor (set in the inspector)
+    [SerializeField] private ObjectPlacementHandler objectPlacementHandler; // Reference to ObjectPlacementHandler (set in the inspector)
 
-    private bool done = false;
-    public bool interactive = true;
-    public bool interactiveKeyPress = false;
-
-    void Start()
+    private void Start()
     {
-        // Find the DrawWorld component in the scene
-        drawWorld = FindObjectOfType<DrawWorld>();
-
-        if (drawWorld == null)
-        {
-            Debug.LogError("DrawWorld component not found in the scene!");
-            return;
-        }
-
-        if (wfcGenerator == null)
-        {
-            Debug.LogError("WFCGenerator component not assigned in the inspector!");
-            return;
-        }
-
-        // Initialize the world visuals using WFCGenerator after a short delay
-        StartCoroutine(InitializeAndRunWFC());
+        // Start the terrain generation process
+        StartCoroutine(InitializeAndGenerateWorld());
     }
 
-    private IEnumerator InitializeAndRunWFC()
+    private IEnumerator InitializeAndGenerateWorld()
     {
-        // Delay to ensure all components are ready (important in complex scenes)
+        // Wait for a frame to ensure all components are ready
         yield return new WaitForEndOfFrame();
 
-        // Initialize the world visuals using WFCGenerator
-        drawWorld.InitializeWorld(wfcGenerator);
-
-        // Run initial wave function collapse
+        // Run the wave function collapse to generate the base terrain
         wfcGenerator.RunWaveFunctionCollapse();
-        drawWorld.UpdateWorld();
+
+        // Post-process tiles to add transitions
+        tilePostProcessor.ProcessTiles();
+
+        // Place decorative objects and tall grass
+        objectPlacementHandler.ProcessAndPlaceObjects();
     }
 
-    void Update()
+    private void Update()
     {
-        // Handle User Input
-        if (Input.GetKeyDown(KeyCode.Escape))
+        // Handle User Input (Optional: For debugging and additional interactions)
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            Application.Quit();
+            // Reset the world and regenerate it
+            ResetWorld();
         }
+    }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (interactive && interactiveKeyPress && !done)
-            {
-                wfcGenerator.RunWaveFunctionCollapse();
-                drawWorld.UpdateWorld();
-            }
-        }
+    private void ResetWorld()
+    {
+        // Clear the existing world (clear all tilemaps, objects, etc.)
+        wfcGenerator.ClearWorld(); // Make sure this method exists in WFCGenerator
+        tilePostProcessor.ClearTiles(); // Ensure this method is implemented to clear transition tiles
+        objectPlacementHandler.ClearObjects(); // Ensure this method is implemented to clear decorative objects
 
-        // Continuous Collapse if not in interactive key press mode
-        if (interactive && !interactiveKeyPress && !done)
-        {
-            wfcGenerator.RunWaveFunctionCollapse();
-            drawWorld.UpdateWorld();
-            done = true; // Prevent re-running collapse unless needed
-        }
-
-        drawWorld.Draw();
+        // Regenerate the world
+        StartCoroutine(InitializeAndGenerateWorld());
     }
 }
+
+
 
