@@ -24,18 +24,23 @@ MonoBehaviour:
     allowedTiles:
     - {fileID: 11400000, guid: cc65972233a04534790923d6802deb08, type: 2}
     - {fileID: 11400000}
-    - {fileID: 11400000, guid: f5377f177f3f50d45ac892741b019760, type: 2}
+    - {fileID: 11400000, guid: 119cdbea3c778b947a317f848bd4317c, type: 2}
+    - {fileID: 11400000, guid: 55766395b40923343a7b3eaec820dbac, type: 2}
   - direction: 1
     allowedTiles:
     - {fileID: 11400000, guid: cc65972233a04534790923d6802deb08, type: 2}
     - {fileID: 11400000}
-    - {fileID: 11400000, guid: f5377f177f3f50d45ac892741b019760, type: 2}
+    - {fileID: 11400000, guid: 119cdbea3c778b947a317f848bd4317c, type: 2}
+    - {fileID: 11400000, guid: 55766395b40923343a7b3eaec820dbac, type: 2}
+    - {fileID: 11400000, guid: bff9b8ad58969d94a9a7e2bca958894a, type: 2}
+    - {fileID: 11400000, guid: 1a137ed89abb86f42a7902cec9826fab, type: 2}
   - direction: 2
     allowedTiles:
     - {fileID: 11400000, guid: cc65972233a04534790923d6802deb08, type: 2}
     - {fileID: 11400000}
-    - {fileID: 11400000, guid: 1b74d55eae34fff4bbb4a10e7efa0940, type: 2}
   - direction: 3
     allowedTiles:
     - {fileID: 11400000, guid: cc65972233a04534790923d6802deb08, type: 2}
     - {fileID: 11400000}
+    - {fileID: 11400000, guid: bff9b8ad58969d94a9a7e2bca958894a, type: 2}
+    - {fileID: 11400000, guid: 1a137ed89abb86f42a7902cec9826fab, type: 2}

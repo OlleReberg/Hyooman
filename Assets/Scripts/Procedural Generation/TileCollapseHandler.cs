@@ -86,7 +86,6 @@ public int CollapseTileAt(int x, int y)
 
         if (currentTile == null || neighborTile == null)
         {
-            Debug.Log($"Null TileConstraint: currentTileType={currentTileType}, neighborTileType={neighborTileType}");
             return false;
         }
 
@@ -95,14 +94,13 @@ public int CollapseTileAt(int x, int y)
 
         if (rule == null)
         {
-            Debug.Log($"No adjacency rule for direction {direction} on tile {currentTileType}");
             return false;
         }
 
         // Check if the neighbor tile is in the list of allowed tiles for this direction
-        bool isCompatible = rule.allowedTiles.Exists(allowedTile => allowedTile.tileType == neighborTileType);
-        return isCompatible;
+        return rule.allowedTiles.Exists(allowedTile => allowedTile.tileType == neighborTileType);
     }
+
 }
 
 

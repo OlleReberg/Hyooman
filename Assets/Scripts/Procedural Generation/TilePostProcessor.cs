@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -26,36 +27,41 @@ public class TilePostProcessor : MonoBehaviour
     }
 
     // Main method to process decorative tiles
-    public void ProcessDecorations()
+    private void ProcessDecorations()
     {
-        // Iterate over the grid to place decorative elements
         for (int y = 0; y < gridManager.gridHeight; y++)
         {
             for (int x = 0; x < gridManager.gridWidth; x++)
             {
                 TileType currentTileType = gridManager.GetTileTypeAt(x, y);
 
-                // Example: Place decorations only on grass tiles
                 if (currentTileType == TileType.Grass)
                 {
-                    PlaceDecorativeTile(x, y);
+                    float totalWeight = decorativeTiles.Where(tile => tile.tileType == TileType.Grass).Sum(tile => tile.weight);
+                    float randomValue = Random.Range(0f, totalWeight + 1.0f); // Slightly increase randomness, some tiles may not have decoration
+
+                    float cumulativeWeight = 0f;
+                    foreach (var decoTile in decorativeTiles.Where(tile => tile.tileType == TileType.Grass))
+                    {
+                        cumulativeWeight += decoTile.weight;
+                        if (randomValue <= cumulativeWeight)
+                        {
+                            PlaceDecorativeTile(x, y, decoTile);
+                            break;
+                        }
+                    }
                 }
             }
         }
     }
-    private void PlaceDecorativeTile(int x, int y)
-    {
-        // Choose a random decorative tile
-        if (decorativeTiles.Count > 0)
-        {
-            int randomIndex = Random.Range(0, decorativeTiles.Count);
-            DecorativeTile selectedTile = decorativeTiles[randomIndex];
 
-            // Place the decorative tile
-            Vector3Int position = new Vector3Int(x, y, 0);
-            backgroundTilemap.SetTile(position, selectedTile.tile);
-        }
+    private void PlaceDecorativeTile(int x, int y, DecorativeTile selectedTile)
+    {
+        Vector3Int position = new Vector3Int(x, y, 0);
+        backgroundTilemap.SetTile(position, selectedTile.tile);
     }
+
+
     public void ClearTiles()
     {
         if (backgroundTilemap != null)

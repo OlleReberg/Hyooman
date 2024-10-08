@@ -35,53 +35,44 @@ public class ObjectPlacementHandler : MonoBehaviour
         foreach (var obj in solidObjectTiles)
         {
             cumulativeWeight += obj.weight;
-            Debug.Log($"Object: {obj.name}, Weight: {obj.weight}, Cumulative: {cumulativeWeight}");
 
             if (randomValue <= cumulativeWeight)
             {
-                Debug.Log($"Placing object: {obj.name} at position ({x}, {y})");
-
-                // Spacing check
+                // Enforce larger minimum spacing
                 foreach (var position in placedPositions)
                 {
-                    if (Vector3Int.Distance(new Vector3Int(x, y, 0), position) < 5f)
+                    if (Vector3Int.Distance(new Vector3Int(x, y, 0), position) < 10f) // Larger distance to reduce object density
                     {
                         return false;
                     }
                 }
 
-                return true;
+                return true; // Place object
             }
         }
         return false;
     }
-
     private void PlaceSolidObject(int x, int y)
     {
         if (solidObjectTiles.Count > 0)
         {
-            // Sum of all object weights
             float totalWeight = solidObjectTiles.Sum(obj => obj.weight);
             float randomValue = Random.Range(0, totalWeight);
             float cumulativeWeight = 0f;
-
-            Debug.Log($"Total object weight for selection: {totalWeight}");
-            Debug.Log($"Random value for selection: {randomValue}");
 
             foreach (var solidObject in solidObjectTiles)
             {
                 cumulativeWeight += solidObject.weight;
 
-                Debug.Log($"Checking Object: {solidObject.name}, Cumulative Weight: {cumulativeWeight}");
-
                 if (randomValue <= cumulativeWeight)
                 {
                     Debug.Log($"Selected Object: {solidObject.name} at {x}, {y}");
 
+                    // Correctly place each tile in the multi-tile object
                     foreach (var tileData in solidObject.tiles)
                     {
                         Vector3Int tilePosition = new Vector3Int(x + tileData.position.x, y + tileData.position.y, 0);
-                        solidObjectsTilemap.SetTile(tilePosition, tileData.tile);
+                        solidObjectsTilemap.SetTile(tilePosition, tileData.tile); // Ensure this is the correct tilemap
                     }
 
                     return; // Stop once an object is placed

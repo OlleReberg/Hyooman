@@ -1042,11 +1042,12 @@ MonoBehaviour:
   gridWidth: 100
   gridHeight: 100
   tileConstraints:
+  - {fileID: 11400000, guid: 55766395b40923343a7b3eaec820dbac, type: 2}
   - {fileID: 11400000, guid: 119cdbea3c778b947a317f848bd4317c, type: 2}
   - {fileID: 11400000, guid: cc65972233a04534790923d6802deb08, type: 2}
-  - {fileID: 11400000, guid: 55766395b40923343a7b3eaec820dbac, type: 2}
   - {fileID: 11400000, guid: 5584da6ccf886ca43801a565dd79334a, type: 2}
   - {fileID: 11400000, guid: bff9b8ad58969d94a9a7e2bca958894a, type: 2}
+  - {fileID: 11400000, guid: 1a137ed89abb86f42a7902cec9826fab, type: 2}
   gridManager: {fileID: 1828541841}
   drawWorld: {fileID: 423739151}
 --- !u!114 &1828541841
