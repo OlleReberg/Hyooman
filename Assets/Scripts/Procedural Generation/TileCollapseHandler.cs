@@ -4,126 +4,106 @@ using UnityEngine;
 
 public class TileCollapseHandler
 {
-    private WFCGenerator wfcGenerator; // Reference to the WFCGenerator for accessing tile constraints and utility functions
+    private WFCGenerator wfcGenerator; // Reference to WFCGenerator for accessing constraints and tile data
+    private GridManager gridManager;   // Reference to GridManager to handle the grid state
 
-    public TileCollapseHandler(WFCGenerator generator)
+    public TileCollapseHandler(WFCGenerator generator, GridManager manager)
     {
         wfcGenerator = generator;
+        gridManager = manager;
+    }
+public int CollapseTileAt(int x, int y)
+{
+    List<TileConstraint> validTiles = new List<TileConstraint>();
+
+    // Get neighboring tile types using GridManager's GetTileTypeAt
+    TileType aboveNeighborType = gridManager.GetTileTypeAt(x, y + 1);
+    TileType belowNeighborType = gridManager.GetTileTypeAt(x, y - 1);
+    TileType leftNeighborType = gridManager.GetTileTypeAt(x - 1, y);
+    TileType rightNeighborType = gridManager.GetTileTypeAt(x + 1, y);
+
+    // Loop through all tile constraints and check compatibility
+    foreach (var constraint in wfcGenerator.tileConstraints)
+    {
+        bool isCompatible = IsTileCompatible(constraint.tileType, aboveNeighborType, TileDirectionType.NORTH)
+                            && IsTileCompatible(constraint.tileType, belowNeighborType, TileDirectionType.SOUTH)
+                            && IsTileCompatible(constraint.tileType, leftNeighborType, TileDirectionType.WEST)
+                            && IsTileCompatible(constraint.tileType, rightNeighborType, TileDirectionType.EAST);
+
+        if (isCompatible)
+        {
+            validTiles.Add(constraint);
+        }
     }
 
-    public int CollapseTileAt(int x, int y)
+    // Select a tile using weights
+    if (validTiles.Count > 0)
     {
-        List<int> validTiles = new List<int>();
-        List<float> tileWeights = new List<float>(); // For weighted random selection
-
-        // Get neighboring tile types using public methods from WFCGenerator
-        TileType aboveNeighborType = wfcGenerator.GetNeighborTileType(x, y + 1);
-        TileType belowNeighborType = wfcGenerator.GetNeighborTileType(x, y - 1);
-        TileType leftNeighborType = wfcGenerator.GetNeighborTileType(x - 1, y);
-        TileType rightNeighborType = wfcGenerator.GetNeighborTileType(x + 1, y);
-
-        // Dictionary to count neighboring biome types
-        Dictionary<TileType, int> neighborBiomeCounts = new Dictionary<TileType, int>();
-
-        // Helper method to count neighboring tiles
-        void CountNeighbor(TileType neighborType)
-        {
-            if (neighborType == TileType.None) return; // Ignore empty spaces
-            if (!neighborBiomeCounts.ContainsKey(neighborType))
-            {
-                neighborBiomeCounts[neighborType] = 0;
-            }
-            neighborBiomeCounts[neighborType]++;
-        }
-
-        // Count neighbors
-        CountNeighbor(aboveNeighborType);
-        CountNeighbor(belowNeighborType);
-        CountNeighbor(leftNeighborType);
-        CountNeighbor(rightNeighborType);
-
-        // Loop through all tile constraints and check compatibility
-        foreach (var constraint in wfcGenerator.tileConstraints)
-        {
-            if (constraint == null) continue;
-
-            bool isCompatible = IsTileCompatible(constraint.tileType, constraint.tileDirection, constraint.transitionType,
-                                                 aboveNeighborType, TileDirectionType.NORTH)
-                                && IsTileCompatible(constraint.tileType, constraint.tileDirection, constraint.transitionType,
-                                                    belowNeighborType, TileDirectionType.SOUTH)
-                                && IsTileCompatible(constraint.tileType, constraint.tileDirection, constraint.transitionType,
-                                                    leftNeighborType, TileDirectionType.WEST)
-                                && IsTileCompatible(constraint.tileType, constraint.tileDirection, constraint.transitionType,
-                                                    rightNeighborType, TileDirectionType.EAST);
-
-            if (isCompatible)
-            {
-                // Add valid tiles and adjust weights based on biome influence
-                if (wfcGenerator.tileTypeToIndex.TryGetValue(constraint.tileType, out List<int> indices))
-                {
-                    foreach (int index in indices)
-                    {
-                        validTiles.Add(index);
-
-                        // Adjust weight: prioritize matching the most common neighboring biome
-                        float weight = 1.0f; // Default weight
-                        if (neighborBiomeCounts.ContainsKey(constraint.tileType))
-                        {
-                            weight += neighborBiomeCounts[constraint.tileType] * 0.5f; // Adjust the multiplier as needed
-                        }
-
-                        tileWeights.Add(weight);
-                    }
-                }
-            }
-        }
-
-        // Select a tile randomly based on the calculated weights
-        if (validTiles.Count > 0)
-        {
-            int selectedIndex = WeightedRandom(validTiles, tileWeights);
-            return validTiles[selectedIndex];
-        }
-
-        // Fallback to a default tile if no valid tiles found
-        return 0;
+        TileConstraint selectedTile = SelectTileWithWeight(validTiles);
+        int selectedIndex = wfcGenerator.tileConstraints.IndexOf(selectedTile);
+        gridManager.SetTileIndex(x, y, selectedIndex);
+        return selectedIndex;
     }
 
-    private int WeightedRandom(List<int> validTiles, List<float> weights)
-    {
-        float totalWeight = weights.Sum();
-        float randomValue = Random.Range(0, totalWeight);
-        float cumulativeWeight = 0;
+    return -1; // No valid tile found
+}
 
-        for (int i = 0; i < weights.Count; i++)
+// Helper method to select a tile with weight
+    private TileConstraint SelectTileWithWeight(List<TileConstraint> validTiles)
+    {
+        float totalWeight = validTiles.Sum(tile => tile.weight);
+        Debug.Log($"Total weight for tile selection: {totalWeight}");
+
+        float randomValue = Random.Range(0f, totalWeight);
+        Debug.Log($"Random value for selection: {randomValue}");
+
+        float cumulativeWeight = 0f;
+        foreach (var tile in validTiles)
         {
-            cumulativeWeight += weights[i];
+            cumulativeWeight += tile.weight;
+            Debug.Log($"Tile: {tile.tileType}, Cumulative Weight: {cumulativeWeight}, RandomValue: {randomValue}");
+
             if (randomValue <= cumulativeWeight)
             {
-                return i;
+                Debug.Log($"Selected Tile: {tile.tileType}");
+                return tile;
             }
         }
-        return 0; // Fallback
+
+        return validTiles[validTiles.Count - 1]; // Default to the last tile in case of rounding errors
     }
-
-    private bool IsTileCompatible(TileType tileType, TileDirection tileDirection, TransitionType transitionType,
-                                  TileType neighborType, TileDirectionType direction)
+    private bool IsTileCompatible(TileType currentTileType, TileType neighborTileType, TileDirectionType direction)
     {
-        if (neighborType == TileType.None) return true; // No neighbor means compatibility by default
+        // If the neighbor tile is 'None', treat it as compatible
+        if (neighborTileType == TileType.None)
+        {
+            return true;
+        }
 
-        // Find the current tile constraint
-        TileConstraint currentTile = wfcGenerator.tileConstraints.FirstOrDefault(tc => tc.tileType == 
-            tileType && tc.transitionType == transitionType);
-        if (currentTile == null) return false;
+        // Retrieve TileConstraints for the current and neighboring tiles
+        TileConstraint currentTile = wfcGenerator.GetTileConstraintByType(currentTileType);
+        TileConstraint neighborTile = wfcGenerator.GetTileConstraintByType(neighborTileType);
+
+        if (currentTile == null || neighborTile == null)
+        {
+            Debug.Log($"Null TileConstraint: currentTileType={currentTileType}, neighborTileType={neighborTileType}");
+            return false;
+        }
 
         // Find the adjacency rule for the specified direction
-        AdjacencyRule rule = currentTile.adjacencyRules.FirstOrDefault(r => r.direction == direction);
-        if (rule == null) return false;
+        var rule = currentTile.adjacencyRules.Find(r => r.direction == direction);
 
-        // Check if the neighbor type, direction, and transition type are in the allowed list for this direction
-        return rule.allowedTiles.Any(pair => pair.tileType == neighborType && pair.tileDirection == 
-            tileDirection && pair.transitionType == transitionType);
+        if (rule == null)
+        {
+            Debug.Log($"No adjacency rule for direction {direction} on tile {currentTileType}");
+            return false;
+        }
+
+        // Check if the neighbor tile is in the list of allowed tiles for this direction
+        bool isCompatible = rule.allowedTiles.Exists(allowedTile => allowedTile.tileType == neighborTileType);
+        return isCompatible;
     }
 }
+
 
 

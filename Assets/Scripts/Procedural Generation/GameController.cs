@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
+    private GridManager gridManager;
     [SerializeField] private WFCGenerator wfcGenerator; // Reference to the WFCGenerator (set in the inspector)
     [SerializeField] private TilePostProcessor tilePostProcessor; // Reference to the TilePostProcessor (set in the inspector)
     [SerializeField] private ObjectPlacementHandler objectPlacementHandler; // Reference to ObjectPlacementHandler (set in the inspector)
@@ -21,7 +22,7 @@ public class GameController : MonoBehaviour
         // Run the wave function collapse to generate the base terrain
         wfcGenerator.RunWaveFunctionCollapse();
 
-        // Post-process tiles to add transitions
+        // Post-process tiles to add transitions and decorations
         tilePostProcessor.ProcessTiles();
 
         // Place decorative objects and tall grass
@@ -37,18 +38,18 @@ public class GameController : MonoBehaviour
             ResetWorld();
         }
     }
-
     private void ResetWorld()
     {
         // Clear the existing world (clear all tilemaps, objects, etc.)
-        wfcGenerator.ClearWorld(); // Make sure this method exists in WFCGenerator
-        tilePostProcessor.ClearTiles(); // Ensure this method is implemented to clear transition tiles
-        objectPlacementHandler.ClearObjects(); // Ensure this method is implemented to clear decorative objects
+        //gridManager.ClearGrid(); 
+        tilePostProcessor.ClearTiles(); 
+        objectPlacementHandler.ClearObjects(); 
 
         // Regenerate the world
         StartCoroutine(InitializeAndGenerateWorld());
     }
 }
+
 
 
 

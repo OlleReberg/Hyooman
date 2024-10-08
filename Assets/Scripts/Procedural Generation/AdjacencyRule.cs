@@ -1,9 +1,16 @@
 ﻿using System.Collections.Generic;
 
+[System.Serializable]
 public class AdjacencyRule
 {
-    public TileDirectionType direction; // Use the new TileDirectionType enum instead of the ambiguous Direction
-    public List<TileTypePair> allowedTiles; // List of allowed TileType, TileDirection, and TransitionType combinations
+    public TileDirectionType direction; // Direction of adjacency (North, South, East, West)
+    public List<TileConstraint> allowedTiles; // List of specific TileConstraints that are allowed
+
+    public AdjacencyRule(TileDirectionType direction)
+    {
+        this.direction = direction;
+        this.allowedTiles = new List<TileConstraint>();
+    }
 }
 
 [System.Serializable]
@@ -39,5 +46,5 @@ public enum TransitionType
     Swamp
 }
 
-// New enum to avoid ambiguity
+// Using TileDirectionType for adjacency rules
 public enum TileDirectionType { NORTH, SOUTH, EAST, WEST }

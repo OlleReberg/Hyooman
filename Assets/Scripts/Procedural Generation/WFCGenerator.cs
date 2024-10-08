@@ -1,8 +1,7 @@
-using System.Collections.Generic;
-using Unity.Collections;
 using UnityEngine;
-using UnityEngine.Tilemaps;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine.Tilemaps;
 
 public class WFCGenerator : MonoBehaviour
 {
@@ -10,15 +9,14 @@ public class WFCGenerator : MonoBehaviour
 
     public int gridWidth = 10;
     public int gridHeight = 10;
-    public TileConstraint[] tileConstraints;
+    public List<TileConstraint> tileConstraints; // List of possible tile constraints
 
-    public Tilemap backgroundTilemap; // Reference to the Background Tilemap
-    public Dictionary<TileType, List<int>> tileTypeToIndex;
-    private NativeArray<int> grid;
-    private TileCollapseHandler tileCollapseHandler;
+    public GridManager gridManager; // Reference to GridManager, set in the inspector
+    [SerializeField] private DrawWorld drawWorld; // Reference to DrawWorld script
 
-    void Awake()
+    private void Awake()
     {
+        // Singleton pattern
         if (Instance == null)
         {
             Instance = this;
@@ -27,197 +25,105 @@ public class WFCGenerator : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        tileCollapseHandler = new TileCollapseHandler(this);
     }
 
-    void Start()
+    private void Start()
     {
-        InitializeTileTypeLookup();
-        InitializeGrid();
+        // Initialize GridManager and pass in tile constraints
+        gridManager.gridWidth = gridWidth;
+        gridManager.gridHeight = gridHeight;
+        gridManager.Initialize(tileConstraints.ToArray()); // Convert List to Array here
+
+        // Generate Biomes before running the wave function collapse
+        GenerateBiomes();
+
+        // Run the WFC algorithm
         RunWaveFunctionCollapse();
+
+        // Draw the world using DrawWorld
+        if (drawWorld != null)
+        {
+            drawWorld.InitializeWorld(); // Draw the world
+        }
+        else
+        {
+            Debug.LogError("DrawWorld script reference is not set in WFCGenerator!");
+        }
     }
 
     public void RunWaveFunctionCollapse()
     {
-        if (tileCollapseHandler == null)
-        {
-            Debug.LogError("TileCollapseHandler is not initialized.");
-            return;
-        }
+        // Initialize the collapse handler
+        TileCollapseHandler collapseHandler = new TileCollapseHandler(this, gridManager);
 
+        // Loop over all grid positions
         for (int y = 0; y < gridHeight; y++)
         {
             for (int x = 0; x < gridWidth; x++)
             {
-                int tileIndex = tileCollapseHandler.CollapseTileAt(x, y);
-                SetTileAt(x, y, tileIndex); // Use SetTileAt method
+                // Collapse the tile at position (x, y)
+                int collapsedTileIndex = collapseHandler.CollapseTileAt(x, y);
+
+                // Update the grid manager with the collapsed tile index
+                gridManager.SetTileIndex(x, y, collapsedTileIndex);
             }
         }
-        ApplyGrid();
     }
-
-    void InitializeTileTypeLookup()
+    private void GenerateBiomes()
     {
-        tileTypeToIndex = new Dictionary<TileType, List<int>>();
+        // Define biome sizes relative to grid size
+        int biomePatchSize = Mathf.Max(gridWidth, gridHeight) / 4;
 
-        for (int i = 0; i < tileConstraints.Length; i++)
+        // Split grid into sections, and assign each section a biome
+        for (int y = 0; y < gridHeight; y++)
         {
-            TileType currentType = tileConstraints[i].tileType;
-
-            if (!tileTypeToIndex.ContainsKey(currentType))
+            for (int x = 0; x < gridWidth; x++)
             {
-                tileTypeToIndex[currentType] = new List<int>();
+                // Assign a biome based on grid position
+                if (x / biomePatchSize % 2 == 0 && y / biomePatchSize % 2 == 0)
+                {
+                    gridManager.SetTileType(x, y, TileType.Grass); // Grass biome
+                }
+                else
+                {
+                    gridManager.SetTileType(x, y, TileType.Sand); // Sand biome
+                }
+
+                Debug.Log($"Biome generated at ({x}, {y}): {gridManager.GetTileTypeAt(x, y)}");
             }
-
-            tileTypeToIndex[currentType].Add(i);
         }
-    }
-
-    void InitializeGrid()
-    {
-        if (grid.IsCreated)
-        {
-            grid.Dispose();
-        }
-
-        grid = new NativeArray<int>(gridWidth * gridHeight, Allocator.Persistent);
-
-        for (int i = 0; i < grid.Length; i++)
-        {
-            grid[i] = -1;
-        }
-    }
-
-    public TileType GetNeighborTileType(int x, int y)
-    {
-        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight)
-            return TileType.None;
-
-        int index = x + y * gridWidth;
-
-        if (index < 0 || index >= grid.Length)
-            return TileType.None;
-
-        int neighborIndex = grid[index];
-
-        if (neighborIndex < 0 || neighborIndex >= tileConstraints.Length)
-            return TileType.None;
-
-        return tileConstraints[neighborIndex].tileType;
-    }
-
-    public TileDirection GetNeighborTileDirection(int x, int y)
-    {
-        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight)
-            return TileDirection.Middle;
-
-        int index = x + y * gridWidth;
-
-        if (index < 0 || index >= grid.Length)
-            return TileDirection.Middle;
-
-        int neighborIndex = grid[index];
-
-        if (neighborIndex < 0 || neighborIndex >= tileConstraints.Length)
-            return TileDirection.Middle;
-
-        return tileConstraints[neighborIndex].tileDirection;
-    }
-
-    public TransitionType GetNeighborTransitionType(int x, int y)
-    {
-        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight)
-            return TransitionType.None;
-
-        int index = x + y * gridWidth;
-
-        if (index < 0 || index >= grid.Length)
-            return TransitionType.None;
-
-        int neighborIndex = grid[index];
-
-        if (neighborIndex < 0 || neighborIndex >= tileConstraints.Length)
-            return TransitionType.None;
-
-        return tileConstraints[neighborIndex].transitionType;
     }
 
     public TileConstraint GetTileConstraintByType(TileType tileType)
     {
-        if (tileTypeToIndex.TryGetValue(tileType, out List<int> indices))
+        // Find the first TileConstraint that matches the given tileType
+        foreach (TileConstraint constraint in tileConstraints)
         {
-            return tileConstraints[indices[0]];
+            if (constraint.tileType == tileType)
+            {
+                return constraint;
+            }
         }
 
         return null;
     }
-
-    public void ApplyGrid()
-    {
-        if (backgroundTilemap == null)
-        {
-            Debug.LogError("Background Tilemap reference is missing!");
-            return;
-        }
-
-        // Draw base terrain on the Background Tilemap
-        for (int y = 0; y < gridHeight; y++)
-        {
-            for (int x = 0; x < gridWidth; x++)
-            {
-                int tileIndex = grid[x + y * gridWidth];
-                TileBase tile = tileConstraints[tileIndex].tile;
-                backgroundTilemap.SetTile(new Vector3Int(x, y, 0), tile);
-            }
-        }
-    }
-
-    public void SetTileAt(int x, int y, int tileIndex)
-    {
-        int index = x + y * gridWidth;
-        if (index >= 0 && index < grid.Length)
-        {
-            grid[index] = tileIndex;
-        }
-    }
-
-    public int GetTileIndex(int x, int y)
-    {
-        int index = x + y * gridWidth;
-        return (index >= 0 && index < grid.Length) ? grid[index] : -1;
-    }
-
-    void OnDestroy()
-    {
-        if (grid.IsCreated)
-        {
-            grid.Dispose();
-        }
-    }
-    
-    public void ClearWorld()
-    {
-        // Clear the terrain tiles on the background tilemap
-        backgroundTilemap.ClearAllTiles();
-        // Reset any other necessary data (e.g., grid, constraints)
-    }
-    public TileType GetTileTypeAt(int x, int y)
-    {
-        if (x < 0 || x >= gridWidth || y < 0 || y >= gridHeight)
-            return TileType.None;
-
-        int index = x + y * gridWidth;
-        int tileIndex = grid[index];
-
-        // Check if tileIndex is valid
-        if (tileIndex < 0 || tileIndex >= tileConstraints.Length)
-            return TileType.None;
-
-        return tileConstraints[tileIndex].tileType;
-    }
-
-
 }
+
+[System.Serializable]
+public class Biome
+{
+    public TileType biomeType;
+    public float biomeWeight; // Determines how much of the map this biome should cover
+}
+
+
+
+
+
+
+
+
+
+
 
 

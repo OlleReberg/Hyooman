@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11e39e0f86bd4729a6122eb7bf9ebcd5, type: 3}
+  m_Name: WaterM 1
+  m_EditorClassIdentifier: 
+  tile: {fileID: 11400000, guid: 090b7841f6ca2e84e8d209ee7b915757, type: 2}
+  tileType: 3
+  weight: 1
+  transitionType: 0
+  tileDirection: 0
+  canRotate: 0
+  allowedRotations: 
+  adjacencyRules:
+  - direction: 0
+    allowedTiles:
+    - {fileID: 11400000}
+    - {fileID: 11400000, guid: 5584da6ccf886ca43801a565dd79334a, type: 2}
+    - {fileID: 11400000, guid: cc65972233a04534790923d6802deb08, type: 2}
+    - {fileID: 11400000, guid: 1a137ed89abb86f42a7902cec9826fab, type: 2}
+  - direction: 1
+    allowedTiles:
+    - {fileID: 11400000}
+    - {fileID: 11400000, guid: 1a137ed89abb86f42a7902cec9826fab, type: 2}
+  - direction: 2
+    allowedTiles:
+    - {fileID: 11400000}
+    - {fileID: 11400000, guid: 1a137ed89abb86f42a7902cec9826fab, type: 2}
+  - direction: 3
+    allowedTiles:
+    - {fileID: 11400000}
+    - {fileID: 11400000, guid: 5584da6ccf886ca43801a565dd79334a, type: 2}
+    - {fileID: 11400000, guid: cc65972233a04534790923d6802deb08, type: 2}
+    - {fileID: 11400000, guid: 1a137ed89abb86f42a7902cec9826fab, type: 2}

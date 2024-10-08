@@ -152,7 +152,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b0d635da9e54ead8220bff489562925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilemap: {fileID: 0}
+  wfcGenerator: {fileID: 1828541840}
+  backgroundTilemap: {fileID: 1685740045}
 --- !u!4 &423739152
 Transform:
   m_ObjectHideFlags: 0
@@ -755,9 +756,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4eed930596193184198dd6400f8c27d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wfcGenerator: {fileID: 0}
-  tilePostProcessor: {fileID: 0}
-  objectPlacementHandler: {fileID: 0}
+  wfcGenerator: {fileID: 1828541840}
+  tilePostProcessor: {fileID: 1828541839}
+  objectPlacementHandler: {fileID: 1828541842}
 --- !u!4 &1651486585
 Transform:
   m_ObjectHideFlags: 0
@@ -965,7 +966,8 @@ GameObject:
   - component: {fileID: 1828541836}
   - component: {fileID: 1828541840}
   - component: {fileID: 1828541839}
-  - component: {fileID: 1828541838}
+  - component: {fileID: 1828541841}
+  - component: {fileID: 1828541842}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -1003,21 +1005,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1828541838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1828541835}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 373d9affba6eb224d8524d618399400d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  wfcGenerator: {fileID: 1828541840}
-  solidObjectsTilemap: {fileID: 1304686940}
-  tallGrassTilemap: {fileID: 1006403513}
 --- !u!114 &1828541839
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1031,9 +1018,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wfcGenerator: {fileID: 1828541840}
-  backgroundTilemap: {fileID: 1685740045}
-  transitionTiles: []
-  decorativeTiles: []
+  gridManager: {fileID: 1828541841}
+  backgroundTilemap: {fileID: 1006403513}
+  decorativeTiles:
+  - {fileID: 11400000, guid: 1761d43551bcfc74c9f8209c611ccd46, type: 2}
+  - {fileID: 11400000, guid: ac5cf2543d799e64b84b54f4e907504b, type: 2}
+  - {fileID: 11400000, guid: 4ae7ebc4c0d12504cbbb08e4852dcf7a, type: 2}
+  - {fileID: 11400000, guid: 0eb4821d8d656604ba2c55c74b902cea, type: 2}
+  - {fileID: 11400000, guid: d4c949d1187ea59499c402e6cb076737, type: 2}
+  - {fileID: 11400000, guid: 239bd4a723a66be4797ebdd24f16e1c8, type: 2}
 --- !u!114 &1828541840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1046,15 +1039,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 908f7e45e96565a46ae9db310a5be960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridWidth: 50
-  gridHeight: 50
+  gridWidth: 100
+  gridHeight: 100
   tileConstraints:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  backgroundTilemap: {fileID: 1685740045}
+  - {fileID: 11400000, guid: 119cdbea3c778b947a317f848bd4317c, type: 2}
+  - {fileID: 11400000, guid: cc65972233a04534790923d6802deb08, type: 2}
+  - {fileID: 11400000, guid: 55766395b40923343a7b3eaec820dbac, type: 2}
+  - {fileID: 11400000, guid: 5584da6ccf886ca43801a565dd79334a, type: 2}
+  - {fileID: 11400000, guid: bff9b8ad58969d94a9a7e2bca958894a, type: 2}
+  gridManager: {fileID: 1828541841}
+  drawWorld: {fileID: 423739151}
+--- !u!114 &1828541841
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828541835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 999465013d3c4433bb73a779e1d1661f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1828541842
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1828541835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 373d9affba6eb224d8524d618399400d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wfcGenerator: {fileID: 1828541840}
+  solidObjectsTilemap: {fileID: 1304686940}
+  solidObjectTiles:
+  - {fileID: 11400000, guid: 75647199b2b66344693ac73c6f453c0a, type: 2}
+  - {fileID: 11400000, guid: 68a7d62decd1ba94bac70b6800b6de9b, type: 2}
 --- !u!1 &1910597905
 GameObject:
   m_ObjectHideFlags: 0
@@ -1116,7 +1139,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 7
+  orthographic size: 30
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1140,7 +1163,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1910597905}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 14, y: -4.5, z: -6.07}
+  m_LocalPosition: {x: 50, y: 40, z: -6.07}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

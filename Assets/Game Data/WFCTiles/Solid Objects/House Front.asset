@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3958a87c47704ff3a04ceaa58d480fde, type: 3}
+  m_Name: House Front
+  m_EditorClassIdentifier: 
+  tile: {fileID: 0}
+  tileType: 0
+  weight: 0.003
+  tiles:
+  - tile: {fileID: 11400000, guid: 5a189fd3f99b97b44a62cfcc505dd231, type: 2}
+    position: {x: 0, y: 0}
+  - tile: {fileID: 11400000, guid: b6117758da7901e4f9eb865a3564788f, type: 2}
+    position: {x: 1, y: 0}
+  - tile: {fileID: 11400000, guid: 059468952a1353f44a5c944eb27f08f5, type: 2}
+    position: {x: 2, y: 0}
+  - tile: {fileID: 11400000, guid: d6426a6ce22c59249ba902c8f355b5d3, type: 2}
+    position: {x: 3, y: 0}
+  - tile: {fileID: 11400000, guid: 47e52de30ee6d0145ae1627bb80a3704, type: 2}
+    position: {x: 4, y: 0}
+  - tile: {fileID: 11400000, guid: 818a2717199523b40b1b6d1f01102571, type: 2}
+    position: {x: 0, y: 1}
+  - tile: {fileID: 11400000, guid: 8810082fe8017cb4e9d0a7deacf79066, type: 2}
+    position: {x: 1, y: 1}
+  - tile: {fileID: 11400000, guid: 1aeee2b4a883fa94b878773fe35d5e14, type: 2}
+    position: {x: 2, y: 1}
+  - tile: {fileID: 11400000, guid: c1701583690661044af1d9950cad8847, type: 2}
+    position: {x: 3, y: 1}
+  - tile: {fileID: 11400000, guid: d5e22d144c9c9b748b0b9f5e9073fbb2, type: 2}
+    position: {x: 4, y: 1}
+  - tile: {fileID: 11400000, guid: ec52eaed7965b3a4990c89b1ef617409, type: 2}
+    position: {x: 0, y: 2}
+  - tile: {fileID: 11400000, guid: 14755ee050665534998b14de1fbb75e0, type: 2}
+    position: {x: 1, y: 2}
+  - tile: {fileID: 11400000, guid: 32253834c05ad114094dba703ef7ac19, type: 2}
+    position: {x: 2, y: 2}
+  - tile: {fileID: 11400000, guid: 0d712896cac7edb498d565961507cf68, type: 2}
+    position: {x: 3, y: 2}
+  - tile: {fileID: 11400000, guid: 3877c44feeb6b39448167a0c9be612a0, type: 2}
+    position: {x: 4, y: 2}
+  - tile: {fileID: 11400000, guid: 98518dbaa960cd546a7c099167bd8a12, type: 2}
+    position: {x: 0, y: 3}
+  - tile: {fileID: 11400000, guid: f3e6c08d3a353e641b881dc0f50980e7, type: 2}
+    position: {x: 1, y: 3}
+  - tile: {fileID: 11400000, guid: c649edbd4c9e9634eb982501ca2ebab2, type: 2}
+    position: {x: 2, y: 3}
+  - tile: {fileID: 11400000, guid: 310698a251c059841b621b2abf0ff71a, type: 2}
+    position: {x: 3, y: 3}
+  - tile: {fileID: 11400000, guid: 3f46468cfa872a2469298a762bf7560b, type: 2}
+    position: {x: 4, y: 3}
+  - tile: {fileID: 11400000, guid: 4c73d953193334b47b46714409075e4b, type: 2}
+    position: {x: 0, y: 4}
+  - tile: {fileID: 11400000, guid: f017e9a70db43c145aaa5dd74b458eb6, type: 2}
+    position: {x: 1, y: 4}
+  - tile: {fileID: 11400000, guid: 797b54a28ef362843b0a02596c83d210, type: 2}
+    position: {x: 2, y: 4}
+  - tile: {fileID: 11400000, guid: 847587828ef2dcb4ea1757fd632588f2, type: 2}
+    position: {x: 3, y: 4}
+  - tile: {fileID: 11400000, guid: 2a8a593df678c2744a2eee1adbcab8fc, type: 2}
+    position: {x: 4, y: 4}

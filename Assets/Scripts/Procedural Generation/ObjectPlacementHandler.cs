@@ -1,81 +1,105 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
 public class ObjectPlacementHandler : MonoBehaviour
 {
-    [SerializeField] private WFCGenerator wfcGenerator; // Reference to WFCGenerator (set in inspector)
-    [SerializeField] private Tilemap solidObjectsTilemap; // Reference to the Solid Objects Tilemap
-    [SerializeField] private Tilemap tallGrassTilemap;   // Reference to the Tall Grass Tilemap
+    [SerializeField] private WFCGenerator wfcGenerator; // Reference to the WFCGenerator
+    [SerializeField] private Tilemap solidObjectsTilemap; // Tilemap for solid objects
+    [SerializeField] private List<SolidObjectTile> solidObjectTiles; // List of solid objects
 
-    // Example method to process and place objects
     public void ProcessAndPlaceObjects()
     {
+        List<Vector3Int> placedPositions = new List<Vector3Int>(); // List to track positions of placed objects
+
         for (int y = 0; y < wfcGenerator.gridHeight; y++)
         {
             for (int x = 0; x < wfcGenerator.gridWidth; x++)
             {
-                PlaceDecorativeObject(x, y);
-                PlaceTallGrass(x, y);
+                // Check if we should place an object here, using the placed positions to ensure spacing
+                if (ShouldPlaceObjectHere(x, y, placedPositions))
+                {
+                    PlaceSolidObject(x, y);
+                    placedPositions.Add(new Vector3Int(x, y, 0)); // Store the position of the placed object
+                }
             }
         }
     }
-
-    private void PlaceDecorativeObject(int x, int y)
+    private bool ShouldPlaceObjectHere(int x, int y, List<Vector3Int> placedPositions)
     {
-        TileType currentTileType = wfcGenerator.GetNeighborTileType(x, y);
+        float totalWeight = solidObjectTiles.Sum(obj => obj.weight);
+        float randomValue = Random.Range(0f, totalWeight);
 
-        // Example logic to place objects based on tile type
-        if (currentTileType == TileType.Grass)
+        float cumulativeWeight = 0f;
+        foreach (var obj in solidObjectTiles)
         {
-            GameObject prefab = GetRandomDecorativeObject(); // Implement a method to get a decorative object prefab
-            if (prefab != null)
+            cumulativeWeight += obj.weight;
+            Debug.Log($"Object: {obj.name}, Weight: {obj.weight}, Cumulative: {cumulativeWeight}");
+
+            if (randomValue <= cumulativeWeight)
             {
-                Vector3 position = solidObjectsTilemap.GetCellCenterWorld(new Vector3Int(x, y, 0));
-                Instantiate(prefab, position, Quaternion.identity);
+                Debug.Log($"Placing object: {obj.name} at position ({x}, {y})");
+
+                // Spacing check
+                foreach (var position in placedPositions)
+                {
+                    if (Vector3Int.Distance(new Vector3Int(x, y, 0), position) < 5f)
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
             }
         }
+        return false;
     }
 
-    private void PlaceTallGrass(int x, int y)
+    private void PlaceSolidObject(int x, int y)
     {
-        TileType currentTileType = wfcGenerator.GetNeighborTileType(x, y);
-
-        // Example logic to place tall grass on grass tiles
-        if (currentTileType == TileType.Grass)
+        if (solidObjectTiles.Count > 0)
         {
-            TileBase tallGrassTile = GetRandomTallGrassTile(); // Implement a method to get a tall grass tile
-            if (tallGrassTile != null)
+            // Sum of all object weights
+            float totalWeight = solidObjectTiles.Sum(obj => obj.weight);
+            float randomValue = Random.Range(0, totalWeight);
+            float cumulativeWeight = 0f;
+
+            Debug.Log($"Total object weight for selection: {totalWeight}");
+            Debug.Log($"Random value for selection: {randomValue}");
+
+            foreach (var solidObject in solidObjectTiles)
             {
-                tallGrassTilemap.SetTile(new Vector3Int(x, y, 0), tallGrassTile);
+                cumulativeWeight += solidObject.weight;
+
+                Debug.Log($"Checking Object: {solidObject.name}, Cumulative Weight: {cumulativeWeight}");
+
+                if (randomValue <= cumulativeWeight)
+                {
+                    Debug.Log($"Selected Object: {solidObject.name} at {x}, {y}");
+
+                    foreach (var tileData in solidObject.tiles)
+                    {
+                        Vector3Int tilePosition = new Vector3Int(x + tileData.position.x, y + tileData.position.y, 0);
+                        solidObjectsTilemap.SetTile(tilePosition, tileData.tile);
+                    }
+
+                    return; // Stop once an object is placed
+                }
             }
         }
     }
-
-    private GameObject GetRandomDecorativeObject()
-    {
-        // Placeholder for logic to get a random decorative object prefab
-        return null;
-    }
-
-    private TileBase GetRandomTallGrassTile()
-    {
-        // Placeholder for logic to get a random tall grass tile
-        return null;
-    }
-    
     public void ClearObjects()
     {
-        // Destroy all placed objects (e.g., trees, tall grass)
-        foreach (Transform child in solidObjectsTilemap.transform)
+        if (solidObjectsTilemap != null)
         {
-            Destroy(child.gameObject);
+            solidObjectsTilemap.ClearAllTiles();
         }
-
-        foreach (Transform child in tallGrassTilemap.transform)
+        else
         {
-            Destroy(child.gameObject);
+            Debug.LogError("SolidObjects Tilemap is not assigned in ObjectPlacementHandler!");
         }
     }
-
 }
+
 

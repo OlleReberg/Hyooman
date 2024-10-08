@@ -10,7 +10,7 @@ public class PlayerMovement : MonoBehaviour
 {
     private ChangeScene sceneChanger;
     [SerializeField] private float moveSpeed;
-    [SerializeField] private bool playerCanMove = true;
+   // [SerializeField] private bool playerCanMove = true;
     [SerializeField] private bool isMoving;
     [SerializeField] private LayerMask solidObjectsLayer;
     [SerializeField] private LayerMask grassLayer;

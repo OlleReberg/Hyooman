@@ -1,8 +1,25 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Tilemaps;
 
 [CreateAssetMenu(menuName = "Tile/SolidObject")]
-// Used for solid objects (trees, rocks, etc.)
 public class SolidObjectTile : BaseTile
 {
-    public bool isCollidable; // Does this object block player movement?
+    [System.Serializable]
+    public struct TileData
+    {
+        public TileBase tile;       // The tile for a specific part of the object
+        public Vector2Int position; // The relative position of this tile
+    }
+
+    public List<TileData> tiles; // List of tiles that form the entire object
+
+    private void OnEnable()
+    {
+        // Ensure the list is initialized
+        if (tiles == null)
+        {
+            tiles = new List<TileData>();
+        }
+    }
 }

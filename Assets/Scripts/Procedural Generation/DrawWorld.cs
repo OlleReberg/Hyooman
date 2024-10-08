@@ -3,73 +3,50 @@ using UnityEngine.Tilemaps;
 
 public class DrawWorld : MonoBehaviour
 {
-    public Tilemap tilemap; // Reference to the Tilemap component
-    private WFCGenerator wfcGenerator;
+    [SerializeField] private WFCGenerator wfcGenerator;
+    [SerializeField] private Tilemap backgroundTilemap;
 
-    public void InitializeWorld(WFCGenerator generator)
+    public void InitializeWorld()
     {
-        // Set the reference to WFCGenerator
-        wfcGenerator = generator;
-        if (generator == null)
+        if (backgroundTilemap == null)
         {
-            Debug.LogError("WFCGenerator passed to InitializeWorld is null!");
+            Debug.LogError("Background Tilemap is not assigned in DrawWorld!");
             return;
         }
 
-        wfcGenerator = generator;
+        // Clear any existing tiles before drawing new ones
+        backgroundTilemap.ClearAllTiles();
 
-        if (tilemap == null)
-        {
-            Debug.LogError("Tilemap is not assigned in the DrawWorld script!");
-            return;
-        }
-
-        tilemap.ClearAllTiles(); // Clear any existing tiles on the Tilemap
+        // Draw the world based on the collapsed tiles
+        DrawTiles();
     }
 
-    public void UpdateWorld()
+    public void DrawTiles()
     {
-        if (wfcGenerator == null)
+        for (int y = 0; y < wfcGenerator.gridManager.gridHeight; y++)
         {
-            Debug.Log("Can't find wfcGenerator while updating world, returning");
-            return;
-        }
-
-        if (tilemap == null)
-        {
-            Debug.LogError("Tilemap is not assigned in DrawWorld!");
-            return;
-        }
-
-        for (int y = 0; y < wfcGenerator.gridHeight; y++)
-        {
-            for (int x = 0; x < wfcGenerator.gridWidth; x++)
+            for (int x = 0; x < wfcGenerator.gridManager.gridWidth; x++)
             {
-                int tileIndex = wfcGenerator.GetTileIndex(x, y);
-                if (tileIndex < 0 || tileIndex >= wfcGenerator.tileConstraints.Length) continue;
+                int tileIndex = wfcGenerator.gridManager.GetTileIndex(x, y);
+               // Debug.Log($"Tile Index at ({x}, {y}): {tileIndex}");
+
+                if (tileIndex < 0 || tileIndex >= wfcGenerator.tileConstraints.Count) continue;
 
                 TileConstraint tileConstraint = wfcGenerator.tileConstraints[tileIndex];
-                TileBase tile = tileConstraint?.tile;
+                TileBase tile = tileConstraint.tile;
+               // Debug.Log($"Tile at ({x}, {y}): {tileConstraint.tileType}");
 
                 if (tile == null) continue;
 
-                // Set the rotation on the Tilemap
-                Quaternion rotation = Quaternion.Euler(0, 0, tileConstraint.allowedRotations[0]); // Assuming the first rotation in allowedRotations is used
-                Matrix4x4 tileRotation = Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one);
-
-                // Set the tile with rotation
-                tilemap.SetTransformMatrix(new Vector3Int(x, -y, 0), tileRotation);
-                tilemap.SetTile(new Vector3Int(x, -y, 0), tile);
+                Vector3Int position = new Vector3Int(x, y, 0);
+                backgroundTilemap.SetTile(position, tile);
             }
         }
     }
-
-
-    public void Draw()
-    {
-        // The tilemap automatically handles drawing, so nothing is needed here
-    }
 }
+
+
+
 
 
 
