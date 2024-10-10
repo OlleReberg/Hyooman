@@ -42,5 +42,3 @@ MonoBehaviour:
     allowedTiles:
     - {fileID: 11400000, guid: 119cdbea3c778b947a317f848bd4317c, type: 2}
     - {fileID: 11400000}
-    - {fileID: 11400000, guid: cc65972233a04534790923d6802deb08, type: 2}
-    - {fileID: 11400000, guid: 5584da6ccf886ca43801a565dd79334a, type: 2}
