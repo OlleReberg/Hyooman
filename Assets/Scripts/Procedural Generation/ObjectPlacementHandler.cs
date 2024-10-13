@@ -54,29 +54,35 @@ public class ObjectPlacementHandler : MonoBehaviour
 
     private void PlaceSolidObject(int x, int y, SolidObjectTile selectedObject)
     {
+        // Use the specified cluster size from the selectedObject
         int clusterSize = Random.Range(selectedObject.minClusterSize, selectedObject.maxClusterSize);
+
+        HashSet<Vector3Int> placedPositions = new HashSet<Vector3Int>();
 
         for (int i = 0; i < clusterSize; i++)
         {
-            // Generate random positions nearby for cluster placement
-            int offsetX = Random.Range(-2, 2); // Adjust for proximity
-            int offsetY = Random.Range(-2, 2); // Adjust for proximity
+            // Try to place the object in nearby positions, without being limited by a small range
+            int offsetX = Random.Range(-5, 5); // Adjust range for larger clusters
+            int offsetY = Random.Range(-5, 5); // Adjust range for larger clusters
 
             Vector3Int tilePosition = new Vector3Int(x + offsetX, y + offsetY, 0);
 
-            // Ensure the position is valid and within bounds of the grid
-            if (tilePosition.x >= 0 && tilePosition.y >= 0 &&
-                tilePosition.x < wfcGenerator.gridWidth && tilePosition.y < wfcGenerator.gridHeight)
+            // Make sure we don't place two objects at the same position
+            if (placedPositions.Contains(tilePosition))
             {
-                foreach (var tileData in selectedObject.tiles)
-                {
-                    Vector3Int adjustedPosition = new Vector3Int(tilePosition.x + tileData.position.x, tilePosition.y + tileData.position.y, 0);
-                    solidObjectsTilemap.SetTile(adjustedPosition, tileData.tile);
-                }
+                continue; // Skip if we already placed something here
             }
+
+            // Place each part of the object at the adjusted position
+            foreach (var tileData in selectedObject.tiles)
+            {
+                Vector3Int adjustedTilePosition = tilePosition + new Vector3Int(tileData.position.x, tileData.position.y, 0);
+                solidObjectsTilemap.SetTile(adjustedTilePosition, tileData.tile);
+            }
+
+            placedPositions.Add(tilePosition); // Track the placed position
         }
     }
-
     public void ClearObjects()
     {
         if (solidObjectsTilemap != null)
