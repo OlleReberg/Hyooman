@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tile: {fileID: 0}
   tileType: 0
-  weight: 0.001
+  weight: 0.0005
   tiles:
   - tile: {fileID: 11400000, guid: 5a189fd3f99b97b44a62cfcc505dd231, type: 2}
     position: {x: 0, y: 0}
