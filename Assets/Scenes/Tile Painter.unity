@@ -757,8 +757,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wfcGenerator: {fileID: 1828541840}
-  tilePostProcessor: {fileID: 1828541839}
   objectPlacementHandler: {fileID: 1828541842}
+  tilePostProcessor: {fileID: 1828541839}
+  usePerlinNoise: 0
 --- !u!4 &1651486585
 Transform:
   m_ObjectHideFlags: 0
@@ -1023,10 +1024,8 @@ MonoBehaviour:
   decorativeTiles:
   - {fileID: 11400000, guid: 1761d43551bcfc74c9f8209c611ccd46, type: 2}
   - {fileID: 11400000, guid: ac5cf2543d799e64b84b54f4e907504b, type: 2}
-  - {fileID: 11400000, guid: 4ae7ebc4c0d12504cbbb08e4852dcf7a, type: 2}
   - {fileID: 11400000, guid: 0eb4821d8d656604ba2c55c74b902cea, type: 2}
   - {fileID: 11400000, guid: d4c949d1187ea59499c402e6cb076737, type: 2}
-  - {fileID: 11400000, guid: 239bd4a723a66be4797ebdd24f16e1c8, type: 2}
 --- !u!114 &1828541840
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1079,6 +1078,9 @@ MonoBehaviour:
   solidObjectTiles:
   - {fileID: 11400000, guid: 75647199b2b66344693ac73c6f453c0a, type: 2}
   - {fileID: 11400000, guid: 68a7d62decd1ba94bac70b6800b6de9b, type: 2}
+  - {fileID: 11400000, guid: 2e721220cba80e240a2f10a4a613f1b5, type: 2}
+  - {fileID: 11400000, guid: 8d6676452e3766c4b918de5fdd2df15d, type: 2}
+  - {fileID: 11400000, guid: 9611bcfa09389ca489e338e15d7f5215, type: 2}
 --- !u!1 &1910597905
 GameObject:
   m_ObjectHideFlags: 0

@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tile: {fileID: 0}
   tileType: 0
-  weight: 0.003
+  weight: 0.001
   tiles:
   - tile: {fileID: 11400000, guid: 5a189fd3f99b97b44a62cfcc505dd231, type: 2}
     position: {x: 0, y: 0}
@@ -66,3 +66,5 @@ MonoBehaviour:
     position: {x: 3, y: 4}
   - tile: {fileID: 11400000, guid: 2a8a593df678c2744a2eee1adbcab8fc, type: 2}
     position: {x: 4, y: 4}
+  minClusterSize: 1
+  maxClusterSize: 2

@@ -11,75 +11,72 @@ public class ObjectPlacementHandler : MonoBehaviour
 
     public void ProcessAndPlaceObjects()
     {
-        List<Vector3Int> placedPositions = new List<Vector3Int>(); // List to track positions of placed objects
+        List<Vector3Int> placedPositions = new List<Vector3Int>(); // Track placed positions
 
-        for (int y = 0; y < wfcGenerator.gridHeight; y++)
+        // Iterate over each type of solid object
+        foreach (var solidObject in solidObjectTiles)
         {
-            for (int x = 0; x < wfcGenerator.gridWidth; x++)
+            // Calculate number of placements based on grid size and weight
+            int numberOfPlacements = Mathf.RoundToInt(wfcGenerator.gridWidth * wfcGenerator.gridHeight * solidObject.weight);
+
+            for (int i = 0; i < numberOfPlacements; i++)
             {
-                // Check if we should place an object here, using the placed positions to ensure spacing
-                if (ShouldPlaceObjectHere(x, y, placedPositions))
+                // Try to find a valid position for this object
+                for (int attempt = 0; attempt < 10; attempt++) // Give 10 attempts to find a valid position
                 {
-                    PlaceSolidObject(x, y);
-                    placedPositions.Add(new Vector3Int(x, y, 0)); // Store the position of the placed object
+                    int x = Random.Range(0, wfcGenerator.gridWidth);
+                    int y = Random.Range(0, wfcGenerator.gridHeight);
+
+                    // Make sure the position respects spacing and is not too close to others
+                    if (ShouldPlaceObjectHere(x, y, placedPositions))
+                    {
+                        PlaceSolidObject(x, y, solidObject);
+                        placedPositions.Add(new Vector3Int(x, y, 0));
+                        break; // Exit the attempt loop after successful placement
+                    }
                 }
             }
         }
     }
+
     private bool ShouldPlaceObjectHere(int x, int y, List<Vector3Int> placedPositions)
     {
-        float totalWeight = solidObjectTiles.Sum(obj => obj.weight);
-        float randomValue = Random.Range(0f, totalWeight);
-
-        float cumulativeWeight = 0f;
-        foreach (var obj in solidObjectTiles)
+        // Ensure spacing logic (e.g., 5 tiles apart from other objects)
+        foreach (var position in placedPositions)
         {
-            cumulativeWeight += obj.weight;
-
-            if (randomValue <= cumulativeWeight)
+            if (Vector3Int.Distance(new Vector3Int(x, y, 0), position) < 5f) // Adjust distance threshold as needed
             {
-                // Enforce larger minimum spacing
-                foreach (var position in placedPositions)
-                {
-                    if (Vector3Int.Distance(new Vector3Int(x, y, 0), position) < 10f) // Larger distance to reduce object density
-                    {
-                        return false;
-                    }
-                }
-
-                return true; // Place object
+                return false; // Skip placement if too close to another object
             }
         }
-        return false;
+        return true; // Place the object if the position is valid
     }
-    private void PlaceSolidObject(int x, int y)
+
+    private void PlaceSolidObject(int x, int y, SolidObjectTile selectedObject)
     {
-        if (solidObjectTiles.Count > 0)
+        int clusterSize = Random.Range(selectedObject.minClusterSize, selectedObject.maxClusterSize);
+
+        for (int i = 0; i < clusterSize; i++)
         {
-            float totalWeight = solidObjectTiles.Sum(obj => obj.weight);
-            float randomValue = Random.Range(0, totalWeight);
-            float cumulativeWeight = 0f;
+            // Generate random positions nearby for cluster placement
+            int offsetX = Random.Range(-2, 2); // Adjust for proximity
+            int offsetY = Random.Range(-2, 2); // Adjust for proximity
 
-            foreach (var solidObject in solidObjectTiles)
+            Vector3Int tilePosition = new Vector3Int(x + offsetX, y + offsetY, 0);
+
+            // Ensure the position is valid and within bounds of the grid
+            if (tilePosition.x >= 0 && tilePosition.y >= 0 &&
+                tilePosition.x < wfcGenerator.gridWidth && tilePosition.y < wfcGenerator.gridHeight)
             {
-                cumulativeWeight += solidObject.weight;
-
-                if (randomValue <= cumulativeWeight)
+                foreach (var tileData in selectedObject.tiles)
                 {
-                    Debug.Log($"Selected Object: {solidObject.name} at {x}, {y}");
-
-                    // Correctly place each tile in the multi-tile object
-                    foreach (var tileData in solidObject.tiles)
-                    {
-                        Vector3Int tilePosition = new Vector3Int(x + tileData.position.x, y + tileData.position.y, 0);
-                        solidObjectsTilemap.SetTile(tilePosition, tileData.tile); // Ensure this is the correct tilemap
-                    }
-
-                    return; // Stop once an object is placed
+                    Vector3Int adjustedPosition = new Vector3Int(tilePosition.x + tileData.position.x, tilePosition.y + tileData.position.y, 0);
+                    solidObjectsTilemap.SetTile(adjustedPosition, tileData.tile);
                 }
             }
         }
     }
+
     public void ClearObjects()
     {
         if (solidObjectsTilemap != null)
@@ -92,5 +89,7 @@ public class ObjectPlacementHandler : MonoBehaviour
         }
     }
 }
+
+
 
 

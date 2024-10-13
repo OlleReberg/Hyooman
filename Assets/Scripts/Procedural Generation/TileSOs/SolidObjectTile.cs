@@ -11,8 +11,11 @@ public class SolidObjectTile : BaseTile
         public TileBase tile;       // The tile for a specific part of the object
         public Vector2Int position; // The relative position of this tile
     }
-
     public List<TileData> tiles; // List of tiles that form the entire object
+
+    // Cluster properties
+    public int minClusterSize = 1;  // Minimum number of tiles in a cluster
+    public int maxClusterSize = 5;  // Maximum number of tiles in a cluster
 
     private void OnEnable()
     {
